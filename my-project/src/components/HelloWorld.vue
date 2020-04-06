@@ -9,14 +9,7 @@ import * as d3 from 'd3'
 export default {
   data () {
     return {
-    }
-  },
-  mounted () {
-    let svg = d3.select('svg')
-    let width = +svg.attr('width')
-    let height = +svg.attr('height')
-
-    let nodesData = [
+      nodesData : [
       { 'name': 'Lillian', 'sex': 'F' },
       { 'name': 'Gordon', 'sex': 'M' },
       { 'name': 'Sylvester', 'sex': 'M' },
@@ -34,9 +27,8 @@ export default {
       { 'name': 'Infante', 'sex': 'M' },
       { 'name': 'Percy', 'sex': 'M' },
       { 'name': 'Cynthia', 'sex': 'F' }
-    ]
-
-    let linksData = [
+    ],
+    linksData:[
       { 'source': 'Sylvester', 'target': 'Gordon', 'type': 'A' },
       { 'source': 'Sylvester', 'target': 'Lillian', 'type': 'A' },
       { 'source': 'Sylvester', 'target': 'Mary', 'type': 'A' },
@@ -63,7 +55,19 @@ export default {
       { 'source': 'Cynthia', 'target': 'Jamie', 'type': 'E' },
       { 'source': 'Mauer', 'target': 'Jessie', 'type': 'E' }
     ]
-
+    }
+  },
+  mounted () {
+    this.showd3(this.nodesData,this.linksData)
+  },
+  methods: {
+    showd3(){
+      let svg = d3.select('svg')
+    let width = +svg.attr('width')
+    let height = +svg.attr('height')
+   let that  = this;
+   let nodesData = this.nodesData;
+   let linksData = this.linksData;
     let simulation = d3.forceSimulation()
       .nodes(nodesData)
 
@@ -79,6 +83,14 @@ export default {
       .append('circle')
       .attr('r', 10)
       .attr('fill', this.circleColor)
+        .on("click", function () {
+          that.nodesData.push({ 'name': 'yyqx', 'sex': 'F' })
+          that.linksData.push({ 'source': 'Mauer', 'target': 'yyqx', 'type': 'E' })
+           that.showd3(that.nodesData,that.linksData)                  
+                            console.log(this);
+                       
+
+                        })
 
     simulation.on('tick', tickAction)
 
@@ -107,8 +119,7 @@ export default {
       .append('line')
       .attr('stroke-width', 2)
       .style('stroke', this.linkColor)
-  },
-  methods: {
+    },
     circleColor (d) {
       if (d.sex === 'M') {
         return 'blue'

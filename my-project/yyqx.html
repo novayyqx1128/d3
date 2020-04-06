@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>力向导图</title>
+    <style type="text/css">
+        .good {
+            font-size: 10px;
+        }
+
+        svg {
+            display: block;
+            width: 600px;
+            height: 600px;
+            margin: 100px auto;
+          
+        }
+        .yyqx{
+            width: 50px;
+            height: 50px;
+            background: red;
+            position: absolute;
+            border-radius: 50%;
+            display: none;
+        }
+        .box{
+            position: relative;
+            display: block;
+            width: 600px;
+            height: 600px;
+            margin: 100px auto;
+           
+        }
+        .down{
+            border-top: 1px solid #333;
+        }
+        .momo{
+            width: 50px;
+            height: 2px;
+            background: #333;
+        }
+    </style>
+    <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+</head>
+
+<body>
+    <div class="box">
+    <svg></svg>
+    <div class='yyqx'>
+        <div class="momo"></div>
+        <div class="up">表格</div>
+        <div class='down'>拓展</div>
+    </div>
+    </div>
+
+    <script type="text/javascript">
+        var nodes = [{ name: "桂林", isFlag: true }, { name: "广州", isFlag: true },
+        { name: "厦门", isFlag: true }, { name: "杭州", isFlag: true },
+        { name: "上海", isFlag: true }, { name: "青岛", isFlag: true },
+        { name: "天津", isFlag: true }];
+
+        var edges = [
+            { source: 0, target: 1 }, { source: 0, target: 2 },
+            { source: 0, target: 3 }, { source: 0, target: 4 },
+            { source: 0, target: 5 }, { source: 0, target: 6 }];
+        var isFlag = false;
+        var force = d3.layout.force()
+            .nodes(nodes) //指定节点数组
+            .links(edges) //指定连线数组
+            .size(['600', '600']) //指定作用域范围
+            .linkDistance(150) //指定连线长度
+            .charge([-300]); //相互之间的作用力
+        force.start()//开始作用；
+        console.log(nodes)//转换后的数据
+        console.log(edges)//转换后的数据
+        var svg = d3.select('svg')
+        // 绘制连接线
+        var svg_edges = svg.selectAll('line')
+            .data(edges)
+            .enter()
+            .append('line')
+            .style('stroke', '#ccc')
+            .style('stroke-width', 1)
+        var color = d3.scale.category20()
+        // 添加节点
+        var svg_nodes = svg.selectAll('circle')
+            .data(nodes)
+            .enter()
+            .append('circle')
+            .attr('r', 10)
+            .style('fill', function (d, i) {
+                return color(i)
+            })
+            .on("click", function (d) {
+                   console.log(d);
+                  var obj = d;
+                    isFlag = !isFlag;
+                            if(!isFlag){
+                                d3.select('.yyqx').style('display','none');
+                              
+
+                            }else{
+                                d3.select('.yyqx').style('display','block');
+                               
+                                d3.select('.yyqx').style('left', function (d, i) {
+                                    return obj.x-25 +'px'
+                                })
+                                d3.select('.yyqx').style('top', function (d, i) {
+                                    return obj.y-25 + 'px'
+                                })
+                            }
+                          
+                
+
+            })
+            .call(force.drag)
+        // 添加节点
+
+        //添加描述文字
+        var svg_texts = svg.selectAll('text')
+            .data(nodes)
+            .enter()
+            .append('text')
+            .style('fill', 'black')
+            .attr('dx', 20)
+            .attr('dy', 8)
+            .text(function (d) {
+                return d.name
+            })
+        // 力想到图是不断运动的，每一时刻都在发生更新，因此必须不断更新节点和连线的位置
+        // force里面的tick时间，每进行到一个时刻都要调用它，监听事件写在这里面就好
+        force.on('tick', function () {
+            // 更新连线坐标
+            svg_edges.attr("x1", function (d) {
+                return d.source.x;
+            })
+                .attr("y1", function (d) {
+                    return d.source.y;
+                })
+                .attr("x2", function (d) {
+                    return d.target.x;
+                })
+                .attr("y2", function (d) {
+                    return d.target.y;
+                });
+
+            // 更新节点坐标
+            svg_nodes.attr("cx", function (d) {
+                return d.x;
+            })
+                .attr("cy", function (d) {
+                    return d.y;
+                });
+            // 更新文字坐标
+            svg_texts.attr("x", function (d) {
+                return d.x;
+            })
+                .attr("y", function (d) {
+                    return d.y;
+                });
+        })
+        $(".up").on("click",function(){
+		alert("up");
+	})
+    $(".down").on("click",function(){
+		alert("down");
+	})
+    </script>
+</body>
+
+</html>
